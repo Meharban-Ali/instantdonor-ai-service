@@ -1,0 +1,72 @@
+# ============================================================
+# BASE — Core dependencies
+# Python 3.11+ | Windows/Linux/Mac compatible
+# Last verified: 2026-05 — Conflict free ✅
+# ============================================================
+
+# ─────────────────────────────────────────────────────────
+# WEB FRAMEWORK
+# FastAPI → Spring Boot jaisa
+# Uvicorn → Tomcat jaisa (ASGI server)
+# python-multipart → Form data + file upload support
+# ─────────────────────────────────────────────────────────
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# ─────────────────────────────────────────────────────────
+# VALIDATION + SETTINGS
+# pydantic → @Valid jaisa — request/response validate
+# pydantic-settings → @ConfigurationProperties jaisa
+# ─────────────────────────────────────────────────────────
+pydantic==2.10.6
+pydantic-settings==2.7.1
+
+# ─────────────────────────────────────────────────────────
+# DATABASE
+# sqlalchemy → Hibernate/JPA jaisa ORM
+# sqlmodel → SQLAlchemy + Pydantic v2 bridge
+# alembic → Flyway jaisa DB migrations
+# pymysql → MySQL sync driver
+# aiomysql → MySQL async driver
+# cryptography → SSL/TLS connections
+# ─────────────────────────────────────────────────────────
+sqlalchemy[asyncio]==2.0.36
+sqlmodel==0.0.22
+alembic==1.14.1
+pymysql==1.1.1
+aiomysql==0.2.0
+cryptography==44.0.2
+
+# ─────────────────────────────────────────────────────────
+# HTTP CLIENT
+# httpx → RestTemplate jaisa — async support
+# ─────────────────────────────────────────────────────────
+httpx==0.28.1
+
+# ─────────────────────────────────────────────────────────
+# CACHING — REDIS
+# ─────────────────────────────────────────────────────────
+redis==5.2.1
+
+# ─────────────────────────────────────────────────────────
+# SECURITY — JWT + Auth
+# python-jose → Spring Security JWT jaisa
+# passlib → BCryptPasswordEncoder jaisa
+# bcrypt → password hashing
+# ─────────────────────────────────────────────────────────
+python-jose[cryptography]==3.3.0
+passlib==1.7.4
+bcrypt==4.2.1
+
+# ─────────────────────────────────────────────────────────
+# RATE LIMITING
+# slowapi → Spring @RateLimiter jaisa
+# ─────────────────────────────────────────────────────────
+slowapi==0.1.9
+
+# ─────────────────────────────────────────────────────────
+# ENVIRONMENT
+# python-dotenv → application.properties jaisa
+# ─────────────────────────────────────────────────────────
+python-dotenv==1.0.1

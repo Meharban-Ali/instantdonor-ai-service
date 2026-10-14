@@ -1,0 +1,9 @@
+# ─────────────────────────────────────────────
+# MAIN requirements.txt
+# Ye file root mein hai — development ke liye shortcut
+# Andar se base + dev + ml sab include karta hai
+# ─────────────────────────────────────────────
+
+-r out/production/requirements/base.txt
+-r out/production/requirements/ml.txt
+-r out/production/requirements/dev.txt
