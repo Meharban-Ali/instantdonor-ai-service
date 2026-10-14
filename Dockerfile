@@ -6,11 +6,10 @@ WORKDIR /app
 RUN groupadd -g 10001 appgroup && \
     useradd -u 10001 -g appgroup -d /app -s /sbin/nologin appuser
 
-# Copy requirements files
+# Copy requirements file
 COPY requirements.txt .
-COPY out/ ./out/
 
-# Install dependencies
+# Install runtime dependencies only
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
