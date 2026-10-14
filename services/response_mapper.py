@@ -74,8 +74,8 @@ class DonorResponseMapper:
             donor_id           = donor["id"],
             user_id            = donor["user_id"],
             rank               = rank,
-            name               = donor["name"],
-            phone_masked       = phone_masked,      # ✅ Privacy
+            name               = donor.get("name") or f"Donor #{donor.get('id', donor.get('donor_id', 'Unknown'))}",
+            phone_masked       = phone_masked,      # ✅ Privacy (None when phone not fetched)
             blood_group        = blood_group,
             blood_group_display = blood_group,       # ✅ Already "A+"
             city               = donor["city"],

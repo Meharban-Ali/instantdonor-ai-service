@@ -103,8 +103,6 @@ class DonorRepository:
                      SELECT
                          dp.id,
                          dp.user_id,
-                         u.name,
-                         u.phone,
                          dp.blood_group,
                          dp.city,
                          dp.latitude,
