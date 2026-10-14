@@ -70,6 +70,24 @@ class TestMLModelManager:
             if os.path.exists(temp_path):
                 os.remove(temp_path)
 
+    def test_load_model_sha256_mismatch_fails(self):
+        """Test that SHA-256 integrity verification fails on mismatch."""
+        with tempfile.NamedTemporaryFile(suffix=".pkl", delete=False) as f:
+            f.write(b"model data here")
+            temp_path = f.name
+
+        try:
+            with patch("core.model_loader.get_ml_config") as mock_cfg, \
+                 patch.dict(os.environ, {"MODEL_SHA256": "0000000000000000000000000000000000000000000000000000000000000000"}):
+                mock_cfg.return_value = MagicMock(model_path=temp_path)
+                manager = MLModelManager.get_instance()
+                assert manager.load_model() is False
+                assert manager.is_loaded is False
+                assert "Model SHA-256 integrity verification failed" in manager.load_error
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
 
 class TestHealthServiceAndComponents:
     """Test HealthService and MLModelHealthComponent."""
