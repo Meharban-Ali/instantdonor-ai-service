@@ -81,10 +81,10 @@ def health_check(
             timestamp       = datetime.now(timezone.utc),  # ✅ Bug Fix 4
         )
 
-        # ✅ Bug Fix 5: 503 agar unhealthy
+        # ✅ Bug Fix 5: 503 agar critical component fail (unhealthy), 200 on healthy/degraded
         http_status = (
             status.HTTP_503_SERVICE_UNAVAILABLE
-            if not result.is_healthy
+            if result.overall_status == "unhealthy"
             else status.HTTP_200_OK
         )
 
