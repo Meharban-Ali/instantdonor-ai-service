@@ -11,19 +11,24 @@ logger = logging.getLogger(__name__)
 # Define the API Key header scheme
 API_KEY_HEADER = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
+
 def verify_api_key(api_key: str = Security(API_KEY_HEADER)) -> str:
     """
     Validate the X-API-KEY header against the configured api_key.
-    
-    If the configured api_key is empty or None, we allow requests
-    but print a warning.
+
+    Strictly enforces API key authentication using constant-time comparison.
+    If the configured api_key is missing, or if the incoming key does not match,
+    HTTP 401 Unauthorized is raised.
     """
     security_config = get_security_config()
-    
+
     if not security_config.api_key:
-        logger.warning("API_KEY is empty in configuration! Permitting unauthenticated access.")
-        return ""
-        
+        logger.error("Access denied: API_KEY is not configured on the server")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="API key authentication required"
+        )
+
     # Use constant-time comparison to prevent timing attacks
     if not api_key or not secrets.compare_digest(api_key, security_config.api_key):
         logger.warning("Access denied: Invalid or missing API Key")
@@ -32,4 +37,3 @@ def verify_api_key(api_key: str = Security(API_KEY_HEADER)) -> str:
             detail="Invalid or missing API Key"
         )
     return api_key
-

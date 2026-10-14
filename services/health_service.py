@@ -122,9 +122,9 @@ class RedisHealthComponent:
 
 class MLModelHealthComponent:
     """
-    ML model file health checker.
+    ML model in-memory readiness health checker.
 
-    SOLID S: Sirf model file check karna.
+    SOLID S: Check whether the ML model is successfully loaded in memory.
     """
 
     @property
@@ -133,18 +133,17 @@ class MLModelHealthComponent:
 
     def is_healthy(self) -> bool:
         """
-        ML model file exist karta hai?
-
-        Logic:
-            MLConfig.model_path se check karo
-            model_exists property use karo
+        Check if the ML model is loaded and ready in memory.
         """
         try:
-            from core.config import get_ml_config
-            config = get_ml_config()
-            return config.model_exists
+            from core.model_loader import MLModelManager
+            manager = MLModelManager.get_instance()
+            if not manager.is_loaded:
+                # Attempt on-demand load if not yet initialized
+                manager.load_model()
+            return manager.is_loaded
         except Exception as e:
-            logger.warning("ML model check failed: %s", str(e))
+            logger.warning("ML model health check failed: %s", str(e))
             return False
 
 
@@ -240,7 +239,7 @@ class HealthService:
     """
 
     # Critical components — fail → "unhealthy"
-    CRITICAL_COMPONENTS = {"database"}
+    CRITICAL_COMPONENTS = {"database", "ml_model"}
 
     def __init__(
             self,

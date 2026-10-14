@@ -19,6 +19,9 @@ COPY . .
 # Set ownership of app directory to appuser
 RUN chown -R appuser:appgroup /app
 
+# Set user local bin path
+ENV PATH="/app/.local/bin:${PATH}"
+
 # Switch to non-privileged user
 USER appuser
 
