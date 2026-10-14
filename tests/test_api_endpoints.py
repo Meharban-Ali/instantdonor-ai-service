@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 from main import create_app
 from services.health_service import HealthCheckResult, ComponentStatus
 from models.response_schemas import DonorMatchResponse, DemandPrediction
+from core.database import get_db
 from models.enums import BloodGroup, UrgencyLevel, TrendDirection
 
 
@@ -14,7 +15,9 @@ from models.enums import BloodGroup, UrgencyLevel, TrendDirection
 def client():
     """Create test client with mocked security and dependencies."""
     app = create_app()
-    return TestClient(app, raise_server_exceptions=False)
+    app.dependency_overrides[get_db] = lambda: MagicMock()
+    yield TestClient(app, raise_server_exceptions=False)
+    app.dependency_overrides.clear()
 
 
 class TestApiEndpoints:
