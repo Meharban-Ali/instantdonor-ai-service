@@ -121,7 +121,6 @@ known_third_party = [
     "sqlalchemy",
     "pydantic",
     "redis",
-    "sklearn",
     "numpy",
     "pandas",
 ]
@@ -183,11 +182,7 @@ module = [
     "fastapi.*",
     "sqlalchemy.*",
     "pydantic.*",
-    "sklearn.*",
-    "scipy.*",
     "redis.*",
-    "jose.*",
-    "passlib.*",
     "slowapi.*",
 ]
 ignore_missing_imports    = true
