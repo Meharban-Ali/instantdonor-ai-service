@@ -116,35 +116,6 @@ class RedisHealthComponent:
             return False
 
 
-# ═══════════════════════════════════════════════════════════
-# ML MODEL HEALTH COMPONENT
-# ═══════════════════════════════════════════════════════════
-
-class MLModelHealthComponent:
-    """
-    ML model in-memory readiness health checker.
-
-    SOLID S: Check whether the ML model is successfully loaded in memory.
-    """
-
-    @property
-    def component_name(self) -> str:
-        return "ml_model"
-
-    def is_healthy(self) -> bool:
-        """
-        Check if the ML model is loaded and ready in memory.
-        """
-        try:
-            from core.model_loader import MLModelManager
-            manager = MLModelManager.get_instance()
-            if not manager.is_loaded:
-                # Attempt on-demand load if not yet initialized
-                manager.load_model()
-            return manager.is_loaded
-        except Exception as e:
-            logger.warning("ML model health check failed: %s", str(e))
-            return False
 
 
 # ═══════════════════════════════════════════════════════════
@@ -200,10 +171,6 @@ class HealthCheckResult:
     def redis_connected(self) -> bool:
         return self._get_status("redis")
 
-    @property
-    def model_loaded(self) -> bool:
-        return self._get_status("ml_model")
-
 
 # ═══════════════════════════════════════════════════════════
 # HEALTH SERVICE
@@ -239,7 +206,7 @@ class HealthService:
     """
 
     # Critical components — fail → "unhealthy"
-    CRITICAL_COMPONENTS = {"database", "ml_model"}
+    CRITICAL_COMPONENTS = {"database"}
 
     def __init__(
             self,
@@ -249,7 +216,6 @@ class HealthService:
         self._checkers = checkers or [
             DatabaseHealthComponent(),
             RedisHealthComponent(),
-            MLModelHealthComponent(),
         ]
 
     def check_health(self) -> HealthCheckResult:

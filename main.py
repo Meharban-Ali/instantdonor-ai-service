@@ -87,16 +87,8 @@ async def lifespan(app: FastAPI):
             "DB check failed on startup: %s", str(e)
         )
 
-    # ML Model check & startup loading
-    try:
-        from core.model_loader import MLModelManager
-        model_loaded = MLModelManager.get_instance().load_model()
-        if model_loaded:
-            logger.info("ML model successfully loaded on startup")
-        else:
-            logger.error("ML model failed to load on startup! Health endpoint will report unhealthy.")
-    except Exception as e:
-        logger.error("Error loading ML model on startup: %s", str(e), exc_info=True)
+    # Deterministic rule-based MCDA scoring initialized (no ML model file/pickle required)
+    logger.info("Deterministic rule-based MCDA scoring algorithm initialized")
 
     logger.info(
         "%s started. Docs: http://%s:%d/docs",

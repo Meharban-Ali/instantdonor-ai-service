@@ -77,7 +77,6 @@ def health_check(
             version         = settings.app_version,
             db_connected    = result.db_connected,
             redis_connected = result.redis_connected,
-            model_loaded    = result.model_loaded,
             timestamp       = datetime.now(timezone.utc),  # ✅ Bug Fix 4
         )
 
@@ -89,11 +88,10 @@ def health_check(
         )
 
         logger.info(
-            "Health check: status=%s, db=%s, redis=%s, model=%s",
+            "Health check: status=%s, db=%s, redis=%s",
             result.overall_status,
             result.db_connected,
             result.redis_connected,
-            result.model_loaded,
         )
 
         return JSONResponse(

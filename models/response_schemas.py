@@ -366,10 +366,6 @@ class HealthResponse(BaseModel):
         default=False,
         description="Redis cache connected?"
     )
-    model_loaded: bool = Field(
-        default=False,
-        description="ML model loaded?"
-    )
 
     # ✅ Bug Fix 1: No trailing comma!
     # UTC timestamp — always timezone aware
@@ -389,7 +385,6 @@ class HealthResponse(BaseModel):
         return (
                 self.db_connected
                 and self.redis_connected
-                and self.model_loaded
         )
 
 

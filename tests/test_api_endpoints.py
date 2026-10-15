@@ -38,7 +38,6 @@ class TestApiEndpoints:
             components=[
                 ComponentStatus(name="database", healthy=True),
                 ComponentStatus(name="redis", healthy=True),
-                ComponentStatus(name="ml_model", healthy=True),
             ]
         )
         with patch("services.health_service.HealthService.check_health", return_value=mock_result):
@@ -48,7 +47,6 @@ class TestApiEndpoints:
             assert data["status"] == "healthy"
             assert data["db_connected"] is True
             assert data["redis_connected"] is True
-            assert data["model_loaded"] is True
 
     def test_health_endpoint_unhealthy_returns_503(self, client):
         """When critical component fails, GET /health returns 503."""
@@ -57,7 +55,6 @@ class TestApiEndpoints:
             components=[
                 ComponentStatus(name="database", healthy=False),
                 ComponentStatus(name="redis", healthy=True),
-                ComponentStatus(name="ml_model", healthy=True),
             ]
         )
         with patch("services.health_service.HealthService.check_health", return_value=mock_result):

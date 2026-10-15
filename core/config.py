@@ -345,71 +345,6 @@ class SecurityConfig(BaseSettings):
     )
 
 
-# ─────────────────────────────────────────────────────────
-# ✅ ML Config - Fixed with protected_namespaces
-# ─────────────────────────────────────────────────────────
-class MLConfig(BaseSettings):
-    """
-    ML Model configuration.
-
-    Model path auto-resolves to absolute path.
-    Check model_exists before loading!
-    """
-
-    model_path: str = Field(
-        default="models/donor_matching_model.pkl",
-        description="Path to trained ML model (.pkl)"
-    )
-    model_version: str = Field(
-        default="1.0.0",
-        description="Model version — for tracking"
-    )
-    max_donors_result: int = Field(
-        default=10, ge=1, le=100,
-        description="Max donors to return in results"
-    )
-    default_radius_km: float = Field(
-        default=50.0, gt=0, le=500,
-        description="Default search radius in km"
-    )
-    max_radius_km: float = Field(
-        default=100.0, gt=0, le=1000,
-        description="Maximum allowed search radius"
-    )
-    min_samples_for_retrain: int = Field(
-        default=100, ge=10,
-        description="Minimum samples before model retrain"
-    )
-
-    # Internal fields - to track model state
-    model_loaded: bool = Field(
-        default=False,
-        description="Is model currently loaded in memory?"
-    )
-
-    @field_validator('model_path')
-    @classmethod
-    def resolve_model_path(cls, v: str) -> str:
-        """Convert relative path to absolute path."""
-        if not os.path.isabs(v):
-            # core/config.py → core/ → ai-service/
-            base_dir = os.path.dirname(
-                os.path.dirname(os.path.abspath(__file__))
-            )
-            return os.path.join(base_dir, v)
-        return v
-
-    @property
-    def model_exists(self) -> bool:
-        """Check if model file exists."""
-        return os.path.isfile(self.model_path)
-
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        case_sensitive=False,
-        extra="ignore",
-        protected_namespaces=('settings_',)  # ✅ Fix for model_* fields warning
-    )
 
 
 # ─────────────────────────────────────────────────────────
@@ -528,12 +463,6 @@ def get_security_config() -> SecurityConfig:
 
 
 @lru_cache()
-def get_ml_config() -> MLConfig:
-    """ML model config — cached singleton."""
-    return MLConfig()
-
-
-@lru_cache()
 def get_ai_weights() -> AIWeightsConfig:
     """AI scoring weights — cached singleton."""
     return AIWeightsConfig()
@@ -545,5 +474,4 @@ def clear_settings_cache() -> None:
     get_db_config.cache_clear()
     get_redis_config.cache_clear()
     get_security_config.cache_clear()
-    get_ml_config.cache_clear()
     get_ai_weights.cache_clear()
