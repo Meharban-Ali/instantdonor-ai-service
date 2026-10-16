@@ -149,16 +149,16 @@ def setup_middlewares(
         minimum_size=1000  # 1KB se bada compress karo
     )
 
-    # ✅ Bug Fix 5: CORS — config se
-    # Logic: Allowed origins config se aate hain
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins     = cors_origins,
-        allow_credentials = True,
-        allow_methods     = ["GET", "POST"],
-        allow_headers     = ["*"],
-        expose_headers    = ["X-Request-ID", "X-Response-Time"],
-    )
+    # ✅ CORS — config se (sirf tab add karo agar origins defined hon, backend-to-backend me empty)
+    if cors_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins     = cors_origins,
+            allow_credentials = True,
+            allow_methods     = ["GET", "POST"],
+            allow_headers     = ["*"],
+            expose_headers    = ["X-Request-ID", "X-Response-Time"],
+        )
 
     # ✅ Bug Fix 9: Request logging
     app.add_middleware(RequestLoggingMiddleware)

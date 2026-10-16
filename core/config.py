@@ -247,8 +247,8 @@ class SecurityConfig(BaseSettings):
         description="JWT algorithm: HS256, HS384, HS512"
     )
     cors_origins: List[str] = Field(
-        default=["http://localhost:8080", "http://localhost:3000", "http://localhost:5173"],
-        description="CORS allowed origins"
+        default=[],
+        description="CORS allowed origins (empty by default for internal backend-to-backend service)"
     )
     api_key: str = Field(
         default="local-dev-api-key-change-in-production",
@@ -262,7 +262,7 @@ class SecurityConfig(BaseSettings):
         Universal CORS parser - handles ALL formats.
 
         Supports:
-            - None / "" → default list
+            - None / "" → default empty list
             - "url1,url2,url3" → comma-separated
             - '["url1", "url2"]' → JSON array
             - ["url1", "url2"] → already list
@@ -270,8 +270,8 @@ class SecurityConfig(BaseSettings):
         """
         import json as _json
 
-        # Default fallback
-        default_origins = ["http://localhost:8080", "http://localhost:3000", "http://localhost:5173"]
+        # Default fallback: empty for backend-to-backend only
+        default_origins = []
 
         # Handle None or empty
         if v is None or v == "":
@@ -280,7 +280,7 @@ class SecurityConfig(BaseSettings):
         # Already a list
         if isinstance(v, list):
             cleaned = [str(o).strip() for o in v if str(o).strip()]
-            return cleaned if cleaned else default_origins
+            return cleaned
 
         # String processing
         if isinstance(v, str):
