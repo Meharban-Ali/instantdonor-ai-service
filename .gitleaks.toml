@@ -1,0 +1,14 @@
+title = "AI Service Gitleaks Configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Ignore untracked local env, venvs, and test fixtures"
+paths = [
+    '''\.env.*''',
+    '''\.venv/.*''',
+    '''env/.*''',
+    '''\.git/.*''',
+    '''tests/.*''',
+]

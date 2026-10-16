@@ -13,7 +13,7 @@ class TestSecurityApiKey:
     def test_missing_api_key_raises_401(self):
         """When incoming api_key is None or empty, raise 401."""
         with patch("core.security.get_security_config") as mock_cfg:
-            mock_cfg.return_value = MagicMock(api_key="valid-secret-key-123")
+            mock_cfg.return_value = MagicMock(api_key="dummy_mock_test_key_not_a_real_secret")
             with pytest.raises(HTTPException) as exc_info:
                 verify_api_key(api_key=None)
             assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
@@ -22,7 +22,7 @@ class TestSecurityApiKey:
     def test_empty_string_api_key_raises_401(self):
         """Empty string api_key raises 401."""
         with patch("core.security.get_security_config") as mock_cfg:
-            mock_cfg.return_value = MagicMock(api_key="valid-secret-key-123")
+            mock_cfg.return_value = MagicMock(api_key="dummy_mock_test_key_not_a_real_secret")
             with pytest.raises(HTTPException) as exc_info:
                 verify_api_key(api_key="")
             assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
@@ -30,7 +30,7 @@ class TestSecurityApiKey:
     def test_invalid_api_key_raises_401(self):
         """Mismatched api_key raises 401."""
         with patch("core.security.get_security_config") as mock_cfg:
-            mock_cfg.return_value = MagicMock(api_key="valid-secret-key-123")
+            mock_cfg.return_value = MagicMock(api_key="dummy_mock_test_key_not_a_real_secret")
             with pytest.raises(HTTPException) as exc_info:
                 verify_api_key(api_key="wrong-key")
             assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
@@ -39,9 +39,9 @@ class TestSecurityApiKey:
     def test_valid_api_key_succeeds(self):
         """Matching api_key succeeds and returns the key."""
         with patch("core.security.get_security_config") as mock_cfg:
-            mock_cfg.return_value = MagicMock(api_key="valid-secret-key-123")
-            result = verify_api_key(api_key="valid-secret-key-123")
-            assert result == "valid-secret-key-123"
+            mock_cfg.return_value = MagicMock(api_key="dummy_mock_test_key_not_a_real_secret")
+            result = verify_api_key(api_key="dummy_mock_test_key_not_a_real_secret")
+            assert result == "dummy_mock_test_key_not_a_real_secret"
 
     def test_server_unconfigured_api_key_denies_access(self):
         """
