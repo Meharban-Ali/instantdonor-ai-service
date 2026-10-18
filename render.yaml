@@ -1,0 +1,34 @@
+services:
+  # ─── FastAPI AI Service Web Service ──────────────────────────────────────────
+  - type: web
+    name: blood-donor-ai-service
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: PORT
+        value: 10000
+      - key: API_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: DB_URL
+        sync: false
+      - key: DB_POOL_SIZE
+        value: "5"
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        value: "6379"
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_SSL
+        value: "true"
+      - key: CORS_ORIGINS
+        value: ""
