@@ -134,7 +134,9 @@ class DatabaseConfig(BaseSettings):
             'mysql+pymysql://',
             'mysql+aiomysql://',
             'postgresql+psycopg2://',
+            'postgresql+psycopg://',
             'postgresql+asyncpg://',
+            'postgresql://',
             'sqlite:///',
         )
         if not any(v.startswith(p) for p in valid_prefixes):

@@ -116,8 +116,8 @@ class DonorRepository:
                      FROM donor_profiles dp
                               INNER JOIN users u
                                          ON dp.user_id = u.id
-                     WHERE u.is_active       = 1
-                       AND dp.is_available   = 1
+                     WHERE u.is_active       = true
+                       AND dp.is_available   = true
                        AND dp.blood_group    IN :blood_groups
                        AND (
                                6371 * acos(LEAST(1.0,

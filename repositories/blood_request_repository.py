@@ -86,20 +86,61 @@ class BloodRequestRepository:
         Raises:
             SQLAlchemyError: DB query fail
         """
-        # ✅ Bug Fix 2: NO f-string — fully parameterized!
-        # :bg IS NULL → blood_group = None dene pe filter skip
-        query = text("""
-                     SELECT
-                         DATEDIFF(NOW(), created_at)  AS days_ago,
-                         DAYNAME(created_at)          AS weekday,
-                         blood_group,
-                         urgency
-                     FROM blood_requests
-                     WHERE LOWER(city) = LOWER(:city)
-                       AND created_at  >= DATE_SUB(NOW(), INTERVAL :days DAY)
-                       AND (:bg IS NULL OR blood_group = :bg)
-                     ORDER BY created_at DESC
-                     """)
+        # Multi-dialect query support (PostgreSQL / Neon, SQLite, MySQL)
+        dialect_name = ""
+        try:
+            bind = self._db.get_bind()
+            if bind and hasattr(bind, "dialect"):
+                dialect_name = getattr(bind.dialect, "name", "")
+        except Exception:
+            dialect_name = ""
+
+        if "postgres" in dialect_name:
+            query = text("""
+                         SELECT
+                             (CURRENT_DATE - created_at::date)::int AS days_ago,
+                             TRIM(TO_CHAR(created_at, 'Day'))      AS weekday,
+                             blood_group,
+                             urgency
+                         FROM blood_requests
+                         WHERE LOWER(city) = LOWER(:city)
+                           AND created_at  >= (NOW() - (:days * INTERVAL '1 day'))
+                           AND (:bg IS NULL OR blood_group = :bg)
+                         ORDER BY created_at DESC
+                         """)
+        elif "sqlite" in dialect_name:
+            query = text("""
+                         SELECT
+                             CAST((julianday('now') - julianday(created_at)) AS INT) AS days_ago,
+                             CASE CAST(strftime('%w', created_at) AS INTEGER)
+                                 WHEN 0 THEN 'Sunday'
+                                 WHEN 1 THEN 'Monday'
+                                 WHEN 2 THEN 'Tuesday'
+                                 WHEN 3 THEN 'Wednesday'
+                                 WHEN 4 THEN 'Thursday'
+                                 WHEN 5 THEN 'Friday'
+                                 ELSE 'Saturday' END AS weekday,
+                             blood_group,
+                             urgency
+                         FROM blood_requests
+                         WHERE LOWER(city) = LOWER(:city)
+                           AND created_at  >= datetime('now', '-' || :days || ' days')
+                           AND (:bg IS NULL OR blood_group = :bg)
+                         ORDER BY created_at DESC
+                         """)
+        else:
+            query = text("""
+                         SELECT
+                             DATEDIFF(NOW(), created_at)  AS days_ago,
+                             DAYNAME(created_at)          AS weekday,
+                             blood_group,
+                             urgency
+                         FROM blood_requests
+                         WHERE LOWER(city) = LOWER(:city)
+                           AND created_at  >= DATE_SUB(NOW(), INTERVAL :days DAY)
+                           AND (:bg IS NULL OR blood_group = :bg)
+                         ORDER BY created_at DESC
+                         """)
 
         try:
             result = self._db.execute(

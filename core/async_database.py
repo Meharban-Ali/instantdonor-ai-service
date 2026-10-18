@@ -52,6 +52,7 @@ class AsyncUrlConverter:
         "mysql+pymysql://":        "mysql+aiomysql://",
         "mysql+mysqldb://":        "mysql+aiomysql://",
         "postgresql+psycopg2://":  "postgresql+asyncpg://",
+        "postgresql+psycopg://":   "postgresql+asyncpg://",
         "postgresql://":           "postgresql+asyncpg://",
         "postgres://":             "postgresql+asyncpg://",
         "sqlite:///":              "sqlite+aiosqlite:///",
