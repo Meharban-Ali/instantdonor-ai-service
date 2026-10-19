@@ -120,3 +120,23 @@ class TestRuleBasedScoring:
         dist = haversine_distance(28.6139, 77.2090, 19.0760, 72.8777)
         assert 1100 <= dist <= 1200
         assert haversine_distance(28.6139, 77.2090, 28.6139, 77.2090) == 0.0
+
+
+class TestRedisConfig:
+    """Verify RedisConfig builds URLs correctly and supports REDIS_URL override."""
+
+    def test_default_redis_url(self):
+        from core.config import RedisConfig
+        cfg = RedisConfig(redis_host="myhost", redis_port=6380, redis_password="", redis_db=1, redis_ssl=False)
+        assert cfg.redis_url == "redis://myhost:6380/1"
+
+    def test_ssl_and_auth_redis_url(self):
+        from core.config import RedisConfig
+        cfg = RedisConfig(redis_host="secure-host", redis_port=6380, redis_password="secret-pass", redis_db=0, redis_ssl=True)
+        assert cfg.redis_url == "rediss://:secret-pass@secure-host:6380/0"
+
+    def test_custom_redis_url_override(self):
+        from core.config import RedisConfig
+        cfg = RedisConfig(custom_redis_url="redis://red-cluster-internal:6379")
+        assert cfg.redis_url == "redis://red-cluster-internal:6379"
+

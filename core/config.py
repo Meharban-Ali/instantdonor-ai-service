@@ -201,10 +201,18 @@ class RedisConfig(BaseSettings):
         default=3600, ge=1,
         description="ML model cache TTL (1 hour)"
     )
+    custom_redis_url: str = Field(
+        default="",
+        validation_alias=AliasChoices("custom_redis_url", "redis_url", "REDIS_URL"),
+        description="Full Redis URL override"
+    )
 
     @property
     def redis_url(self) -> str:
         """Redis connection URL build karo."""
+        if self.custom_redis_url:
+            return self.custom_redis_url
+
         scheme = "rediss" if self.redis_ssl else "redis"
 
         if self.redis_password:
