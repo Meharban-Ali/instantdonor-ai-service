@@ -1,40 +1,58 @@
-# Blood Donor AI Service
+# 🧠 AI Blood Donor Matching Service
 
-High-performance, secure FastAPI microservice providing intelligent donor matching and blood demand forecasting for the Blood Donor Network platform.
-
----
-
-## 1. Donor Matching Architecture: Deterministic Rule-Based MCDA
-
-> **Architectural Note:**  
-> The donor matching engine utilizes **100% deterministic rule-based Multi-Criteria Decision Analysis (MCDA)** implemented in `utils/scoring.py`.  
-> There is **no binary ML model file (`.pkl` / `.joblib`)** and **no untrusted deserialization**. All scoring algorithms are fully deterministic, auditable, explainable, and testable without external model dependencies.
-
-### Scoring Formula
-The composite donor score $S \in [0.0, 1.0]$ is computed as:
-$$S = (0.35 \times S_{\text{dist}}) + (0.30 \times S_{\text{compat}}) + (0.20 \times S_{\text{rel}}) + (0.15 \times S_{\text{urg}})$$
-
-Where:
-- **$S_{\text{dist}}$ (Distance Score):** Proximity computed using the Great-Circle Haversine formula over geographic coordinates $(\text{lat}, \text{lng})$. Normalizes distance relative to the requested search radius.
-- **$S_{\text{compat}}$ (Compatibility Score):** Exact ABO & Rh(D) compatibility matrix. Exact match = `1.0`, compatible universal donor (e.g. O- to A+) = `0.8`, incompatible = `0.0`.
-- **$S_{\text{rel}}$ (Reliability Score):** Normalized donor historical reliability and attendance record (scale `0.0 - 1.0`).
-- **$S_{\text{urg}}$ (Urgency Multiplier):** Dynamic prioritization depending on `CRITICAL`, `URGENT`, or `NORMAL` request levels.
+> Intelligent donor matching microservice using Multi-Criteria Decision Analysis (MCDA), built with FastAPI, Python 3.11, PostgreSQL (psycopg2/asyncpg), and Redis.
 
 ---
 
-## 2. API Endpoints
+## 🎯 Features
 
-| Endpoint | Method | Auth Required | Description |
-| :--- | :---: | :---: | :--- |
-| `/health` | `GET` | No | Component health check (`database`, `redis`). Returns 200 (healthy/degraded) or 503 (unhealthy). |
-| `/api/v1/match-donors` | `POST` | `X-API-KEY` | Matches and ranks compatible donors using deterministic MCDA. |
-| `/api/v1/predict-demand` | `POST` | `X-API-KEY` | Forecasts blood unit demand using statistical trend analysis over historical blood requests. |
+- **Multi-Criteria Decision Analysis (MCDA):** Ranks candidate donors across 4 weighted factors:
+  - **Distance (40%):** Haversine distance from patient to donor.
+  - **Reliability (30%):** Historical response rate and verified attendance.
+  - **Eligibility (20%):** Time elapsed since last donation.
+  - **Response Rate (10%):** Acceptance frequency on urgent requests.
+- **Privacy Protection:** Phone numbers masked in ranking outputs (`98****3210`).
+- **PostgreSQL 16 & Neon Compatibility:** Reads from read-only role (`ai_service_ro`) with SSL support.
+- **City Wildcard Safety:** ANSI SQL `ESCAPE '\'` protects city filtering against `%`, `_`, and `\` injection.
+- **Observability:**
+  - `GET /live`: Lightweight liveness probe (no DB/Redis touch, Render-safe).
+  - `GET /health`: Deep status check exposing `version` and `commit` SHA.
+  - `GET /health/ready`: Readiness probe checking database connectivity.
 
 ---
 
-## 3. Security & Hardening Controls
-- **API Key Authentication:** Constant-time header verification (`secrets.compare_digest`) via `X-API-KEY`.
-- **Zero Deserialization Attack Surface:** Scikit-learn and joblib pickle loading have been completely removed.
-- **Data Privacy & PII Protection:** The service does NOT store or expose donor names, phone numbers, email addresses, or exact geo-coordinates. Matches are identified purely by anonymous `donor_id` and `distance_km`.
-- **Least-Privilege Database Access:** Read-only database user (`ai_service_ro`) with column-level `SELECT` grants only.
-- **Non-Root Docker Execution:** Container runs under unprivileged user `appuser:appgroup` (UID/GID 10001).
+## 🛠️ Stack & Dependencies
+
+- **Python:** 3.11
+- **Framework:** FastAPI 0.115+, Starlette, Uvicorn
+- **Database Driver:** SQLAlchemy 2.0+, psycopg2-binary 2.9+, asyncpg 0.29+
+- **Cache:** Redis 7
+- **Validation:** Pydantic v2
+
+---
+
+## ⚙️ Environment Variables
+
+| Variable | Required in Prod | Default | Description |
+|:---|:---:|:---|:---|
+| `DB_URL` | **YES** | `None` | PostgreSQL connection URL (e.g. `postgresql+psycopg2://ai_service_ro:pass@ep-xyz.neon.tech/blood_donor_db?sslmode=require`). |
+| `REDIS_HOST` | No | `localhost` | Redis server hostname. |
+| `REDIS_PORT` | No | `6379` | Redis server port. |
+| `AI_SERVICE_API_KEY` | **YES** | `None` | Shared API key required on matching endpoints (minimum 32 characters in prod). |
+| `GIT_SHA` | No | `unknown` | Commit SHA injected at build/deployment time for `/health` traceability. |
+| `ENVIRONMENT` | No | `development` | `development`, `staging`, or `production`. |
+
+---
+
+## 🚀 Local Development
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run server locally
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+# Run tests
+pytest
+```

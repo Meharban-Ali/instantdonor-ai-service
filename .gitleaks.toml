@@ -1,14 +1,18 @@
-title = "AI Service Gitleaks Configuration"
+title = "Blood Donor Network AI Service Gitleaks Config"
 
 [extend]
 useDefault = true
 
 [allowlist]
-description = "Ignore untracked local env, venvs, and test fixtures"
+description = "Global allowlist for ai-service tests and mock data"
 paths = [
-    '''\.env.*''',
-    '''\.venv/.*''',
-    '''env/.*''',
-    '''\.git/.*''',
-    '''tests/.*''',
+  '''^\.env\.example$''',
+  '''^tests/.*'''
+]
+
+stopwords = [
+  "test-api-key",
+  "local-dev-api-key-change-in-production",
+  "testuser",
+  "testpass"
 ]
