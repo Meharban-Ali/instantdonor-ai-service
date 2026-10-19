@@ -187,8 +187,23 @@ class AsyncDatabaseEngineFactory:
                     db_config.db_url
                 )
 
+                connect_args = {}
+                if "asyncpg" in async_url:
+                    from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+                    parsed = urlparse(async_url)
+                    qs = parse_qs(parsed.query)
+                    sslmode = qs.pop("sslmode", None)
+                    if sslmode:
+                        new_query = urlencode(qs, doseq=True)
+                        async_url = urlunparse(parsed._replace(query=new_query))
+                        if sslmode[0] in ("require", "verify-ca", "verify-full"):
+                            connect_args["ssl"] = "require"
+                    if "ssl=require" in async_url.lower() or "neon.tech" in async_url.lower():
+                        connect_args["ssl"] = "require"
+
                 cls._async_engine = create_async_engine(
                     async_url,
+                    connect_args = connect_args,
                     pool_size    = db_config.db_pool_size,
                     max_overflow = db_config.db_max_overflow,
                     pool_timeout = db_config.db_pool_timeout,  # ✅ Bug Fix 5

@@ -79,20 +79,24 @@ class ConnectArgsFactory:
         }
 
     @staticmethod
-    def for_postgresql() -> dict:
+    def for_postgresql(db_url: str = "") -> dict:
         """
         PostgreSQL connection args.
 
         Explanation:
         connect_timeout → connection timeout
-        application_name → pg_stat_activity mein dikh
+        application_name → pg_stat_activity mein dikhe
         options → UTC timezone force karo
+        sslmode → require for Neon/cloud if requested
         """
-        return {
+        args = {
             "connect_timeout":  10,
             "application_name": "blood_donor_ai",
             "options":          "-c timezone=UTC",
         }
+        if "sslmode=require" in db_url.lower() or "neon.tech" in db_url.lower():
+            args["sslmode"] = "require"
+        return args
 
     @staticmethod
     def for_sqlite() -> dict:
@@ -125,7 +129,7 @@ class ConnectArgsFactory:
         if "mysql" in url_lower or "mariadb" in url_lower:
             return cls.for_mysql()
         elif "postgresql" in url_lower or "postgres" in url_lower:
-            return cls.for_postgresql()
+            return cls.for_postgresql(db_url)
         elif "sqlite" in url_lower:
             return cls.for_sqlite()
         else:
