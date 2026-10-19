@@ -3,7 +3,7 @@ import warnings
 from functools import lru_cache
 from typing import List
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import AliasChoices, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -345,6 +345,11 @@ class Settings(BaseSettings):
     app_version: str = Field(
         default="1.0.0",
         description="Application version"
+    )
+    git_sha: str = Field(
+        default="unknown",
+        validation_alias=AliasChoices("GIT_SHA", "git_sha", "RENDER_GIT_COMMIT"),
+        description="Git commit SHA for build traceability"
     )
     debug: bool = Field(
         default=False,

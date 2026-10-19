@@ -357,6 +357,7 @@ class HealthResponse(BaseModel):
     status:  str = Field(..., description="healthy|degraded|unhealthy")
     service: str = Field(..., description="Service name")
     version: str = Field(..., description="Service version")
+    commit:  str = Field(default="unknown", description="Git commit SHA")
 
     # Component health
     db_connected: bool = Field(..., description="MySQL connected?")

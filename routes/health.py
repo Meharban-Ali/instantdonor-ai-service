@@ -75,6 +75,7 @@ def health_check(
             status          = result.overall_status,  # ✅ Bug Fix 3
             service         = settings.app_name,      # ✅ Bug Fix 2
             version         = settings.app_version,
+            commit          = settings.git_sha,
             db_connected    = result.db_connected,
             redis_connected = result.redis_connected,
             timestamp       = datetime.now(timezone.utc),  # ✅ Bug Fix 4
