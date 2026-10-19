@@ -240,14 +240,6 @@ class SecurityConfig(BaseSettings):
         - ["http://localhost:8080", "http://localhost:3000"]
     """
 
-    jwt_secret: str = Field(
-        default="BloodDonorNetworkSecretKey2024ForLocalDevOnly123456",
-        description="JWT secret key (min 32 chars)"
-    )
-    jwt_algorithm: str = Field(
-        default="HS384",
-        description="JWT algorithm: HS256, HS384, HS512"
-    )
     cors_origins: List[str] = Field(
         default=[],
         description="CORS allowed origins (empty by default for internal backend-to-backend service)"
@@ -314,23 +306,6 @@ class SecurityConfig(BaseSettings):
 
         # Unknown type - return default
         return default_origins
-
-    @field_validator('jwt_secret')
-    @classmethod
-    def validate_jwt_secret(cls, v: str) -> str:
-        if v and len(v) < 32:
-            raise ValueError(f"JWT secret must be >= 32 chars, got {len(v)}")
-        if not v:
-            warnings.warn("JWT_SECRET is empty! This is insecure!", UserWarning, stacklevel=2)
-        return v
-
-    @field_validator('jwt_algorithm')
-    @classmethod
-    def validate_jwt_algorithm(cls, v: str) -> str:
-        allowed = {'HS256', 'HS384', 'HS512'}
-        if v not in allowed:
-            raise ValueError(f"JWT algorithm must be one of {allowed}, got '{v}'")
-        return v
 
     @field_validator('api_key')
     @classmethod

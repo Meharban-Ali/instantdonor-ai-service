@@ -155,9 +155,6 @@ def create_app() -> FastAPI:
 
     # ✅ Production Security Hardening: Prevent default keys in production
     if settings.is_production:
-        if security_config.jwt_secret == "BloodDonorNetworkSecretKey2024ForLocalDevOnly123456":
-            logger.error("PRODUCTION SECURITY ERROR: Default JWT_SECRET is configured in production!")
-            raise ValueError("Default JWT_SECRET cannot be used in production mode!")
         if security_config.api_key == "local-dev-api-key-change-in-production":
             logger.error("PRODUCTION SECURITY ERROR: Default API_KEY is configured in production!")
             raise ValueError("Default API_KEY cannot be used in production mode!")

@@ -4,7 +4,7 @@ services:
     name: blood-donor-ai-service
     env: docker
     plan: free
-    region: oregon
+    region: singapore
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
     envVars:
@@ -15,8 +15,6 @@ services:
       - key: PORT
         value: 10000
       - key: API_KEY
-        sync: false
-      - key: JWT_SECRET
         sync: false
       - key: DB_URL
         sync: false

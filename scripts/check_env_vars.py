@@ -61,7 +61,7 @@ def scan_ai_service_env_vars(repo_root):
                     env_vars[var_name]['code'].add(f"{rel_path}:{line_no}")
 
     # Required variables enforced in main.py / dependencies
-    for req in ["API_KEY", "JWT_SECRET"]:
+    for req in ["API_KEY"]:
         if req in env_vars:
             env_vars[req]['prod_required'] = True
 
