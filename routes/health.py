@@ -172,6 +172,11 @@ def detailed_health_check(
 #   500 → dead (restart karo)
 
 @router.get(
+    "/live",
+    summary     = "Lightweight liveness probe",
+    description = "Lightweight alive check — no database or redis check. Safe for Render health checks.",
+)
+@router.get(
     "/health/live",
     summary     = "Kubernetes liveness probe",
     description = "Simple alive check — no external deps.",

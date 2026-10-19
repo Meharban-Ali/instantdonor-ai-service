@@ -31,6 +31,15 @@ class TestApiEndpoints:
         assert "version" in data
         assert "endpoints" in data
 
+    def test_live_endpoint_returns_200_without_db(self, client):
+        """GET /live should return 200 immediately without touching database."""
+        resp = client.get("/live")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["status"] == "live"
+        assert "timestamp" in data
+        assert "service" in data
+
     def test_health_endpoint_healthy_returns_200(self, client):
         """When components are healthy, GET /health returns 200."""
         mock_result = HealthCheckResult(
