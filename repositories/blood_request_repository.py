@@ -5,6 +5,7 @@ from typing import Optional
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+from utils.sql_utils import escape_like_wildcards
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +104,7 @@ class BloodRequestRepository:
                              blood_group,
                              urgency
                          FROM blood_requests
-                         WHERE LOWER(city) = LOWER(:city)
+                         WHERE LOWER(city) LIKE LOWER(:city) ESCAPE '\\'
                            AND created_at  >= (NOW() - (:days * INTERVAL '1 day'))
                            AND (:bg IS NULL OR blood_group = :bg)
                          ORDER BY created_at DESC
@@ -123,7 +124,7 @@ class BloodRequestRepository:
                              blood_group,
                              urgency
                          FROM blood_requests
-                         WHERE LOWER(city) = LOWER(:city)
+                         WHERE LOWER(city) LIKE LOWER(:city) ESCAPE '\\'
                            AND created_at  >= datetime('now', '-' || :days || ' days')
                            AND (:bg IS NULL OR blood_group = :bg)
                          ORDER BY created_at DESC
@@ -136,7 +137,7 @@ class BloodRequestRepository:
                              blood_group,
                              urgency
                          FROM blood_requests
-                         WHERE LOWER(city) = LOWER(:city)
+                         WHERE LOWER(city) LIKE LOWER(:city) ESCAPE '\\'
                            AND created_at  >= DATE_SUB(NOW(), INTERVAL :days DAY)
                            AND (:bg IS NULL OR blood_group = :bg)
                          ORDER BY created_at DESC
@@ -146,7 +147,7 @@ class BloodRequestRepository:
             result = self._db.execute(
                 query,
                 {
-                    "city": city.strip(),
+                    "city": escape_like_wildcards(city.strip()),
                     "days": days,
                     # ✅ None → SQL NULL → filter skip
                     "bg":   blood_group,

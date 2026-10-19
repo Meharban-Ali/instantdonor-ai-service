@@ -182,3 +182,25 @@ def test_postgres_demand_history_query_and_case(pg_session):
     assert "weekday" in item
     assert item["blood_group"] == "A+"
     assert item["urgency"] in ("HIGH", "CRITICAL")
+
+    # Verify SQL LIKE wildcard escaping (%, _, \)
+    delhi_percent = repo.get_request_history(city="del%", blood_group="A+", days=30)
+    assert len(delhi_percent) == 0, f"Expected 0 requests for unescaped wildcard 'del%', got {len(delhi_percent)}"
+
+    delhi_underscore = repo.get_request_history(city="del_i", blood_group="A+", days=30)
+    assert len(delhi_underscore) == 0, f"Expected 0 requests for unescaped wildcard 'del_i', got {len(delhi_underscore)}"
+
+    delhi_backslash = repo.get_request_history(city="del\\hi", blood_group="A+", days=30)
+    assert len(delhi_backslash) == 0, f"Expected 0 requests for 'del\\hi', got {len(delhi_backslash)}"
+
+
+def test_escape_like_wildcards_unit():
+    """Unit test for escape_like_wildcards utility function."""
+    from utils.sql_utils import escape_like_wildcards
+    assert escape_like_wildcards(None) is None
+    assert escape_like_wildcards("") == ""
+    assert escape_like_wildcards("Delhi") == "Delhi"
+    assert escape_like_wildcards("100%") == "100\\%"
+    assert escape_like_wildcards("New_York") == "New\\_York"
+    assert escape_like_wildcards("Path\\City") == "Path\\\\City"
+    assert escape_like_wildcards("%_\\") == "\\%\\_\\\\"
