@@ -9,8 +9,8 @@
 
 ## Reporting a Vulnerability
 
-Please report potential security issues directly to:
-- **Email:** `security@blooddonor.com` or `meharbanali7900@gmail.com`
+Please report potential security issues directly via:
+- **Reporting Method:** Please use GitHub Private Vulnerability Reporting on this repository. Do not open public issues for security vulnerabilities.
 
 Please include:
 1. Affected endpoint or function.
