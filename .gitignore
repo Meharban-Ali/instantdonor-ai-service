@@ -44,12 +44,37 @@ htmlcov/
 *.swp
 *.swo
 
-# Logs
+# Certificates & Secrets
+*.pem
+*.key
+*.p12
+*.jks
+*.pfx
+certs/
+secrets/
+
+# Logs & Dumps
 *.log
 logs/
+*.hprof
+*.dump
+*.sql.gz
+backup_original_jar/
+scratch/
+
+# Testing & Artifacts
+screenshots/
+e2e-screenshots/
+test-results/
+playwright-report/
+coverage/
+htmlcov/
+.coverage
+target/
+node_modules/
+dist/
 
 # Local cache & test artifacts
 .cache/
 .local/
-screenshots/
 *.png
