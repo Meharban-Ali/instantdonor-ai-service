@@ -13,14 +13,14 @@
                                             ▼
                       ┌──────────────────────────────────────────┐
                       │              Vercel Edge                 │
-                      │       https://instantdonor.online        │
+                      │         https://<YOUR_DOMAIN>            │
                       │       (Vite React SPA + vercel.json)     │
                       └─────────────────────┬────────────────────┘
                                             │ API Requests (CORS / Bearer)
                                             ▼
                       ┌──────────────────────────────────────────┐
                       │             Render Web Service           │
-                      │     https://api.instantdonor.online      │
+                      │       https://api.<YOUR_DOMAIN>          │
                       │     (Spring Boot 4.1.1 / Java 21)        │
                       └───────┬──────────────────────────┬───────┘
                               │                          │
@@ -90,8 +90,8 @@
   - `MAIL_HOST=smtp.resend.com`
   - `MAIL_PORT=2587`
   - `MAIL_USERNAME=resend`
-  - `MAIL_PASSWORD=re_your_resend_api_key`
-  - `MAIL_FROM_ADDRESS=noreply@instantdonor.online`
+  - `MAIL_PASSWORD=<API_KEY>`
+  - `MAIL_FROM_ADDRESS=<MAIL_FROM_ADDRESS>`
   - `MAIL_FROM_NAME="AI Blood Donor Network"`
 
 ---
@@ -115,7 +115,7 @@
    ```
    JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=55.0 -XX:InitialRAMPercentage=40.0 -Xss512k -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:+ExitOnOutOfMemoryError"
    ```
-6. Add custom domain `api.instantdonor.online` in Render service settings and add the CNAME record in your DNS registrar pointing to your Render service address.
+6. Add custom domain `api.<YOUR_DOMAIN>` in Render service settings and add the CNAME record in your DNS registrar pointing to your Render service address.
 7. Configure Environment Variables (see Section 4 Table).
 
 ### Step 3: Deploy Frontend on Vercel
@@ -125,19 +125,19 @@
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
 4. Set Environment Variable:
-   - `VITE_API_BASE_URL`: `https://api.instantdonor.online/api`
+   - `VITE_API_BASE_URL`: `https://api.<YOUR_DOMAIN>/api`
 5. Deploy. Vercel automatically applies [`vercel.json`](file:///vercel.json) rules:
    - Single Page Application (SPA) catch-all rewrite to `/index.html`.
    - Security headers: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`.
-   - Content Security Policy: `connect-src 'self' https://api.instantdonor.online`.
+   - Content Security Policy: `connect-src 'self' https://api.<YOUR_DOMAIN>`.
    - Private indexing protection: `X-Robots-Tag: noindex, nofollow`.
-6. Attach Custom Domain `instantdonor.online` and `www.instantdonor.online` in Vercel settings and configure DNS A/CNAME records.
+6. Attach Custom Domain `<YOUR_DOMAIN>` and `www.<YOUR_DOMAIN>` in Vercel settings and configure DNS A/CNAME records.
 
 ---
 
 ## 4. Environment Variables Reference Tables
 
-### Service 1: Spring Boot Backend (`api.instantdonor.online`)
+### Service 1: Spring Boot Backend (`api.<YOUR_DOMAIN>`)
 
 | Variable | Required | Source / Provider | Description / Example |
 | :--- | :---: | :--- | :--- |
@@ -159,17 +159,17 @@
 | `JWT_SECRET` | Yes | User Generated | Cryptographically secure string, min 48 chars (`openssl rand -hex 32`) |
 | `JWT_EXPIRATION` | Optional | App Config | Access token validity in ms (`86400000` = 24h) |
 | `JWT_REFRESH_EXPIRATION` | Optional | App Config | Refresh token validity in ms (`604800000` = 7d) |
-| `FRONTEND_URL` | Yes | App Config | `https://instantdonor.online` |
-| `CORS_ALLOWED_ORIGINS` | Yes | App Config | `https://instantdonor.online,https://www.instantdonor.online` |
+| `FRONTEND_URL` | Yes | App Config | `https://<YOUR_DOMAIN>` |
+| `CORS_ALLOWED_ORIGINS` | Yes | App Config | `https://<YOUR_DOMAIN>,https://www.<YOUR_DOMAIN>` |
 | `AI_SERVICE_URL` | Yes | Render AI URL | `https://blood-donor-ai-service.onrender.com` |
 | `AI_SERVICE_API_KEY` | Yes | User Generated | Shared secret matching `API_KEY` in AI service |
 | `MAIL_HOST` | Optional | Resend | `smtp.resend.com` |
 | `MAIL_PORT` | Optional | Resend | `2587` (bypasses Render free SMTP block) |
 | `MAIL_USERNAME` | Optional | Resend | `resend` |
-| `MAIL_PASSWORD` | Optional | Resend | Resend API Key (`re_...`) |
-| `MAIL_FROM_ADDRESS` | Optional | App Config | `noreply@instantdonor.online` |
+| `MAIL_PASSWORD` | Optional | Resend | Resend API Key (`<API_KEY>`) |
+| `MAIL_FROM_ADDRESS` | Optional | App Config | `<MAIL_FROM_ADDRESS>` |
 | `MAIL_FROM_NAME` | Optional | App Config | `AI Blood Donor Network` |
-| `MAIL_REPLY_TO` | Optional | App Config | `support@instantdonor.online` |
+| `MAIL_REPLY_TO` | Optional | App Config | `<MAIL_FROM_ADDRESS>` |
 | `TWILIO_ACCOUNT_SID` | Optional | Twilio | Twilio Account SID |
 | `TWILIO_AUTH_TOKEN` | Optional | Twilio | Twilio Auth Token |
 | `TWILIO_PHONE_NUMBER` | Optional | Twilio | Twilio Phone Number |
@@ -189,13 +189,13 @@
 | `REDIS_PORT` | Yes | Redis Provider | Redis port (`6379`) |
 | `REDIS_PASSWORD` | Optional | Redis Provider | Redis auth password |
 | `REDIS_SSL` | Yes | Redis Provider | `false` for Render internal, `true` for external/Upstash |
-| `CORS_ORIGINS` | Optional | App Config | Empty or `["https://api.instantdonor.online"]` |
+| `CORS_ORIGINS` | Optional | App Config | Empty or `["https://api.<YOUR_DOMAIN>"]` |
 
-### Service 3: Frontend (`instantdonor.online`)
+### Service 3: Frontend (`<YOUR_DOMAIN>`)
 
 | Variable | Required | Source / Provider | Description / Example |
 | :--- | :---: | :--- | :--- |
-| `VITE_API_BASE_URL` | Yes | Build-Time (Vercel) | `https://api.instantdonor.online/api` |
+| `VITE_API_BASE_URL` | Yes | Build-Time (Vercel) | `https://api.<YOUR_DOMAIN>/api` |
 
 ---
 
