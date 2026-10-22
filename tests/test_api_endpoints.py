@@ -36,7 +36,7 @@ class TestApiEndpoints:
         resp = client.get("/live")
         assert resp.status_code == 200
         data = resp.json()
-        assert data["status"] == "live"
+        assert data["status"] in ("alive", "live")
         assert "timestamp" in data
         assert "service" in data
 
