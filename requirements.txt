@@ -17,3 +17,5 @@ redis==5.2.1
 numpy==1.26.4
 pandas==2.2.0
 certifi>=2026.10.19
+urllib3>=2.8.0
+msgpack>=1.2.1
