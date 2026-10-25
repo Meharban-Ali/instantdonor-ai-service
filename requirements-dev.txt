@@ -5,7 +5,7 @@ pytest-asyncio==0.25.3
 pytest-cov==6.0.0
 pytest-mock==3.14.0
 freezegun==1.5.1
-factory-boy==3.3.1
+factory-boy==3.3.3
 black==25.1.0
 isort==5.13.2
 flake8==7.1.1
